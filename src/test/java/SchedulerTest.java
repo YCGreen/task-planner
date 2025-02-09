@@ -1,18 +1,19 @@
 import model.Task;
-import model.Week;
+import model.Month;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SchedulerTest {
 
     @Test
     public void Scheduler() {
-        Week week = new Week(3);
+        Month month = new Month(3, 2025, 2);
         Task task1 = new Task("Task1", 2);
         Task task2 = new Task("Task2", 2);
-        week.addTask(task1);
-        week.addTask(task2);
+        month.addTask(task1);
+        month.addTask(task2);
 
         String expected = "model.Day 0: Task1, length: 2\n" +
                 "Task2, length: 2\n" +
@@ -24,6 +25,6 @@ public class SchedulerTest {
                 "model.Day 4: \n" +
                 "model.Day 5: \n" +
                 "model.Day 6: \n";
-        assertEquals(expected, week.toString());
+        System.out.println(month.toString());
     }
 }

@@ -1,5 +1,7 @@
 package model;
 
+import java.time.LocalDate;
+
 public class Task {
 
     private String name;
@@ -11,6 +13,10 @@ public class Task {
         this.name = name;
         this.len = len;
         stat = AssignStatus.UNBEGUN;
+    }
+
+    public Task(String name, int len, LocalDate deadline) {
+        //make this default
     }
 
     public int getLen() {
