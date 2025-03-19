@@ -17,4 +17,17 @@ public class Day {
         return availHours;
     }
 
+    public void addTask(Task task) {
+        tasks.add(task);
+    }
+
+    public void subtractHours(int hoursUsed) {
+        availHours -= hoursUsed;
+    }
+
+    public String toString() {
+        return "Available hours: " + availHours + "\nTasks: " + tasks.toString();
+    }
+
+
 }

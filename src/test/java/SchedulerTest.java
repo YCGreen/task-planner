@@ -1,6 +1,9 @@
+import model.Scheduler;
 import model.Task;
 import model.Month;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,11 +12,11 @@ public class SchedulerTest {
 
     @Test
     public void Scheduler() {
-        Month month = new Month(3, 2025, 2);
+        Scheduler scheduler = new Scheduler(3);
         Task task1 = new Task("Task1", 2);
         Task task2 = new Task("Task2", 2);
-        month.addTask(task1);
-        month.addTask(task2);
+        scheduler.addTask(task1, LocalDate.now().plusDays(3));
+        scheduler.addTask(task2, LocalDate.now().plusDays(3));
 
         String expected = "model.Day 0: Task1, length: 2\n" +
                 "Task2, length: 2\n" +
@@ -25,6 +28,6 @@ public class SchedulerTest {
                 "model.Day 4: \n" +
                 "model.Day 5: \n" +
                 "model.Day 6: \n";
-        System.out.println(month.toString());
+        System.out.println(scheduler.getCurrMonth().toString());
     }
 }

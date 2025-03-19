@@ -39,8 +39,8 @@ public class Month {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < days.size(); i++) {
-            sb.append("model.Day " + (i + 1) + ": " + days.get(i).toString() + "\n");
+        for (Map.Entry<LocalDate, Day> entry : days.entrySet()) {
+            sb.append("Date: ").append(entry.getKey()).append(" -> ").append(entry.getValue().toString()).append("\n");
         }
 
         return sb.toString();
