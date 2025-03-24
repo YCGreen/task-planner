@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -29,6 +30,8 @@ public class UserInterface {
         Task task = new Task(name, length);
         model.addAttribute("task", task);
         scheduler.addTask(task, LocalDate.parse(date));
+        HashMap<LocalDate, Day> days = scheduler.getCurrMonth().getDays();
+        model.addAttribute("days", days);
         return "submit"; //redirect to calendar
     }
 

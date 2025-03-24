@@ -13,6 +13,10 @@ public class Day {
         tasks = new ArrayList<>();
     }
 
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
     public int getAvailHours() {
         return availHours;
     }
