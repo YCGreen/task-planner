@@ -12,13 +12,15 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
 
 @Controller
 @SpringBootApplication
 public class UserInterface {
 
     private Scheduler scheduler = new Scheduler(3);
-    LocalDate currentDate = LocalDate.now();
+    int currMonth = LocalDate.now().getMonthValue();
 
     @GetMapping("/")
     public String home() {
@@ -29,9 +31,9 @@ public class UserInterface {
     public String submitForm(@RequestParam(required = false) String direction, @ModelAttribute TaskFormData taskFormData, Model model) {
         if (direction != null) {
             if ("previous".equals(direction)) {
-                currentDate = currentDate.minusDays(1);
+                currMonth--;
             } else if ("next".equals(direction)) {
-                currentDate = currentDate.plusDays(1);
+                currMonth++;
             }
         }
 
@@ -39,14 +41,13 @@ public class UserInterface {
             scheduler.addTask(new Task(taskFormData.getName(), taskFormData.getLength()), LocalDate.parse(taskFormData.getDate()));
         }
 
-        HashMap<LocalDate, Day> days = scheduler.getCurrMonth().getDays();
-        Day currentDay = days.get(currentDate);
-        model.addAttribute("tasks", currentDay != null ? currentDay.getTasks() : new ArrayList<>());
-        model.addAttribute("currentDate", currentDate);
+        TreeMap<LocalDate, Day> days = scheduler.getMonth(currMonth).getDays();
+        model.addAttribute("days", days);
+
         return "submit";
     }
 
-    @PostMapping("/updateHours")
+    @PostMapping("/updateHours") //TODO: work on me
     public String updateHours(@ModelAttribute AvailHoursFormData hoursFormData, Model model) {
         if (hoursFormData.getRangeStart() != null && hoursFormData.getRangeEnd() != null && hoursFormData.getHours() != null) {
             LocalDate start = LocalDate.parse(hoursFormData.getRangeStart());
@@ -61,7 +62,7 @@ public class UserInterface {
 
     @GetMapping("/calendar")
     public String showCalendar(Model model) {
-        HashMap<LocalDate, Day> days = scheduler.getCurrMonth().getDays();
+        TreeMap<LocalDate, Day> days = scheduler.getCurrMonth().getDays();
         model.addAttribute("days", days);
         return "calendar";
     }
@@ -87,4 +88,7 @@ Add new task: task name, amount of time to complete, deadline. option: split up 
 or do in shorter number of days with more work per day? maybe set that in set availability
 Enter. then task scheduler schedules and leads to view calendar
 
+
+TODO:
+fix so you don't get error when hit currMonth = -1
  */

@@ -34,6 +34,14 @@ public class Scheduler {
         return months.get(LocalDate.now().getMonthValue() - 1);
     }
 
+    public Month getMonth(int month) {
+        return months.get(month - 1);
+    }
+
+    public List<Month> getMonths() {
+        return months;
+    }
+
     private List<Day> getAvailDays(LocalDate dueDate) {
         LocalDate now = LocalDate.now();
 
@@ -102,7 +110,7 @@ public class Scheduler {
         }
     }
 
-    private List<Day> getDaysInRange(LocalDate start, LocalDate end) {
+    public List<Day> getDaysInRange(LocalDate start, LocalDate end) {
         return IntStream.rangeClosed(start.getMonthValue() - 1, end.getMonthValue() - 1)
                 .mapToObj(i -> months.get(i))
                 .flatMap(month -> month.getDays().entrySet().stream())

@@ -1,15 +1,12 @@
 package model;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.time.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Month {
 
-    private HashMap<LocalDate, Day> days = new HashMap<LocalDate, Day>();
+    private TreeMap<LocalDate, Day> days = new TreeMap<LocalDate, Day>();
 
     public Month(int availHours, LocalDate date) {
         java.time.Month currentMonth = date.getMonth();
@@ -20,7 +17,7 @@ public class Month {
         }
     }
 
-    public HashMap<LocalDate, Day> getDays() {
+    public TreeMap<LocalDate, Day> getDays() {
         return days;
     }
 
