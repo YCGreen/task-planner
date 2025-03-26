@@ -30,6 +30,10 @@ public class UserInterface {
     @PostMapping("/submit")
     public String submitForm(@RequestParam(required = false) String direction, @ModelAttribute TaskFormData taskFormData, Model model) {
         if (direction != null) {
+            if(currMonth == 12) {
+                scheduler.addYear();
+                currMonth = 0;
+            }
             if ("previous".equals(direction)) {
                 currMonth--;
             } else if ("next".equals(direction)) {
@@ -53,6 +57,7 @@ public class UserInterface {
             LocalDate start = LocalDate.parse(hoursFormData.getRangeStart());
             LocalDate end = LocalDate.parse(hoursFormData.getRangeEnd());
             scheduler.setRangeAvailHours(hoursFormData.getHours(), start, end);
+            currMonth = 0;
         }
 
         // Add updated scheduler data to the model if needed

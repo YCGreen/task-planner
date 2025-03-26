@@ -101,7 +101,7 @@ public class Scheduler {
         return AssignStatus.UNBEGUN;
     }
 
-    private void addYear() {
+    public void addYear() {
         LocalDate currMonth = LocalDate.now().withDayOfYear(1).plusYears(1);
 
         for (int i = 0; i < 12; i++) {

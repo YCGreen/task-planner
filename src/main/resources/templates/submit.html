@@ -9,95 +9,232 @@
             font-family: Arial, sans-serif;
             background-color: #f8f8f8;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
+        /* Header Styling */
+        .header {
+            background: linear-gradient(45deg, #4CAF50, #007BFF);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 15px;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .header a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        /* Main Content Styling */
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 1200px;
+            margin: 20px auto;
             background: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
         }
         h1 {
             color: #333;
+            text-align: center;
+            margin-bottom: 30px;
         }
+        p {
+            font-size: 16px;
+            color: #555;
+            text-align: center;
+        }
+        /* Grid Layout for Days */
         .day-grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr); /* 7 columns */
-            gap: 10px;
+            grid-template-columns: repeat(7, 1fr); /* 7 columns for calendar layout */
+            gap: 15px;
             margin-top: 20px;
         }
         .day-item {
-            padding: 10px;
-            background: #f1f1f1;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
             border-radius: 6px;
-            text-align: left;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .day-item:hover {
+            background-color: #e3f2fd;
         }
         .day-item h4 {
-            margin: 0;
-            margin-bottom: 8px;
-            color: #555;
+            margin: 0 0 10px;
+            color: #333;
         }
-        .task-list ul {
+        .day-item p {
+            margin: 0;
+            color: #666;
+        }
+        ul {
             list-style-type: none;
             padding: 0;
-            margin: 0;
+            margin: 10px 0 0;
         }
-        .task-list ul li {
-            padding: 6px;
+        ul li {
+            padding: 8px;
             background: #e9e9e9;
-            margin: 4px 0;
+            margin: 5px 0;
             border-radius: 4px;
+            font-size: 14px;
         }
-        .button-group {
-            margin-top: 20px;
+        /* Highlight Today's Date */
+        .day-item.today {
+            background-color: #abd6ff; /* Highlight color */
+            border: 2px solid #007bff;
+            box-shadow: 0 4px 6px rgb(113, 139, 172);
         }
-        .button-group button {
+        /* Fullscreen View Styling */
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 2000;
+            padding: 40px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: auto;
+            border-radius: 0;
+            animation: expand 0.4s ease-in-out;
+        }
+        @keyframes expand {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .fullscreen h2 {
+            color: #007BFF;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .fullscreen-content {
+            text-align: left;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .fullscreen-content p {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .fullscreen-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .fullscreen-content ul li {
+            padding: 10px;
+            background: #e9e9e9;
+            margin: 10px 0;
+            border-radius: 6px;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .fullscreen button {
+            margin-top: 30px;
             padding: 10px 20px;
-            margin: 5px;
             background-color: #007BFF;
             color: white;
             border: none;
             border-radius: 4px;
+            font-size: 16px;
             cursor: pointer;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .button-group button:hover {
+        .fullscreen button:hover {
             background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
+<div class="header">
+    <a href="/">Submit Form</a>
+    <a href="/submit">View Tasks</a>
+</div>
 <div class="container">
     <h1>Task Viewer</h1>
-    <p>Date Range: <span th:text="range"></span></p>
+    <p>Date Range: <span th:text="${range}"></span></p>
 
     <div class="day-grid">
         <!-- Thymeleaf loop to display days in grid -->
-        <div class="day-item" th:each="entry : ${days}">
-            <h4 th:text="${entry.key}">Date</h4>
+        <div class="day-item"
+             th:each="entry : ${days}"
+             th:classappend="${entry.key.equals(T(java.time.LocalDate).now()) ? 'today' : ''}"
+             onclick="expandBox(this)">
+            <h4 th:text="${#temporals.format(entry.key, 'MM/dd/yyyy')}">Date</h4>
             <p><strong>Hours Available:</strong> <span th:text="${entry.value.getAvailHours}">0</span></p>
-            <div class="task-list">
-                <ul>
-                    <!-- Thymeleaf loop to display tasks -->
-                    <li th:each="task : ${entry.value.getTasks}" th:text="${task.toString}">Task</li>
-                </ul>
-            </div>
+            <ul>
+                <!-- Thymeleaf loop to display tasks -->
+                <li th:each="task : ${entry.value.getTasks}" th:text="${task.toString}">Task</li>
+            </ul>
         </div>
     </div>
-
-    <div class="button-group">
-        <form action="/submit" method="post" style="display: inline;">
-            <input type="hidden" name="direction" value="previous" />
-            <button type="submit">Previous Range</button>
-        </form>
-        <form action="/submit" method="post" style="display: inline;">
-            <input type="hidden" name="direction" value="next" />
-            <button type="submit">Next Range</button>
-        </form>
-    </div>
-    <a href="/" class="btn">Go Back to Submit Task</a>
 </div>
+
+<!-- Fullscreen View -->
+<div id="fullscreen-box" class="hidden">
+    <h2 id="fullscreen-title"></h2>
+    <div id="fullscreen-content" class="fullscreen-content">
+        <!-- Content gets dynamically filled -->
+    </div>
+    <button onclick="collapseBox()">Return to Calendar</button>
+</div>
+
+<script>
+    // Expand the day box to fullscreen
+    function expandBox(element) {
+        const fullscreenBox = document.getElementById('fullscreen-box');
+        const fullscreenTitle = document.getElementById('fullscreen-title');
+        const fullscreenContent = document.getElementById('fullscreen-content');
+
+        // Extract date for the title
+        const date = element.querySelector('h4').innerText;
+        fullscreenTitle.innerText = `Details for ${date}`;
+
+        // Copy content into fullscreen box
+        fullscreenContent.innerHTML = element.innerHTML;
+
+        // Show the fullscreen box
+        fullscreenBox.classList.remove('hidden');
+        fullscreenBox.classList.add('fullscreen');
+    }
+
+    // Collapse the fullscreen box back to calendar
+    function collapseBox() {
+        const fullscreenBox = document.getElementById('fullscreen-box');
+
+        // Hide the fullscreen box
+        fullscreenBox.classList.add('hidden');
+        fullscreenBox.classList.remove('fullscreen');
+    }
+</script>
 </body>
 </html>
