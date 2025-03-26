@@ -1,4 +1,4 @@
-package view;
+package controller;
 
 import model.Day;
 import model.Scheduler;
@@ -8,17 +8,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 @Controller
 @SpringBootApplication
 public class UserInterface {
 
     private Scheduler scheduler = new Scheduler(3);
+    LocalDate currentDate = LocalDate.now();
 
     @GetMapping("/")
     public String home() {
@@ -26,13 +26,37 @@ public class UserInterface {
     }
 
     @PostMapping("/submit")
-    public String submitForm(@RequestParam String name, @RequestParam int length, @RequestParam String date, Model model) {
-        Task task = new Task(name, length);
-        model.addAttribute("task", task);
-        scheduler.addTask(task, LocalDate.parse(date));
+    public String submitForm(@RequestParam(required = false) String direction, @ModelAttribute TaskFormData taskFormData, Model model) {
+        if (direction != null) {
+            if ("previous".equals(direction)) {
+                currentDate = currentDate.minusDays(1);
+            } else if ("next".equals(direction)) {
+                currentDate = currentDate.plusDays(1);
+            }
+        }
+
+        if (taskFormData.getName() != null && taskFormData.getLength() != null && taskFormData.getDate() != null) {
+            scheduler.addTask(new Task(taskFormData.getName(), taskFormData.getLength()), LocalDate.parse(taskFormData.getDate()));
+        }
+
         HashMap<LocalDate, Day> days = scheduler.getCurrMonth().getDays();
-        model.addAttribute("days", days);
-        return "submit"; //redirect to calendar
+        Day currentDay = days.get(currentDate);
+        model.addAttribute("tasks", currentDay != null ? currentDay.getTasks() : new ArrayList<>());
+        model.addAttribute("currentDate", currentDate);
+        return "submit";
+    }
+
+    @PostMapping("/updateHours")
+    public String updateHours(@ModelAttribute AvailHoursFormData hoursFormData, Model model) {
+        if (hoursFormData.getRangeStart() != null && hoursFormData.getRangeEnd() != null && hoursFormData.getHours() != null) {
+            LocalDate start = LocalDate.parse(hoursFormData.getRangeStart());
+            LocalDate end = LocalDate.parse(hoursFormData.getRangeEnd());
+            scheduler.setRangeAvailHours(hoursFormData.getHours(), start, end);
+        }
+
+        // Add updated scheduler data to the model if needed
+        //model.addAttribute("currentDate", currentDate);
+        return "submit"; // Render the update hours page
     }
 
     @GetMapping("/calendar")

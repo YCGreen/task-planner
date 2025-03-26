@@ -3,6 +3,9 @@ package model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Scheduler {
 
@@ -18,9 +21,19 @@ public class Scheduler {
         }
     }
 
+    public void setMonthAvailHours(int availHours, LocalDate month) {
+        months.get(LocalDate.now().getMonthValue() - 1).setAvailHours(availHours);
+    }
+
+    public void setRangeAvailHours(int availHours, LocalDate begin, LocalDate end) {
+        List<Day> days = getDaysInRange(begin, end);
+        days.forEach(day -> day.setAvailHours(availHours));
+    }
+
     public Month getCurrMonth() {
         return months.get(LocalDate.now().getMonthValue() - 1);
     }
+
     private List<Day> getAvailDays(LocalDate dueDate) {
         LocalDate now = LocalDate.now();
 
@@ -54,7 +67,7 @@ public class Scheduler {
             if(++currDay >= days.size()) {
                 return false;
             }
-            addTask(days.get(currDay), task);
+            status = addTask(days.get(currDay), task);
         }
 
         return true;
@@ -87,6 +100,16 @@ public class Scheduler {
             currMonth = currMonth.plusMonths(1);
             months.add(new Month(3, currMonth)); //TODO: replace availHours
         }
+    }
+
+    private List<Day> getDaysInRange(LocalDate start, LocalDate end) {
+        return IntStream.rangeClosed(start.getMonthValue() - 1, end.getMonthValue() - 1)
+                .mapToObj(i -> months.get(i))
+                .flatMap(month -> month.getDays().entrySet().stream())
+                .filter(entry -> !entry.getKey().isBefore(start) && !entry.getKey().isAfter(end))
+                .sorted(Map.Entry.comparingByKey())
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList());
     }
 
 }

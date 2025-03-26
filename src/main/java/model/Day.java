@@ -21,6 +21,10 @@ public class Day {
         return availHours;
     }
 
+    public void setAvailHours(int availHours) {
+        this.availHours = availHours;
+    }
+
     public void addTask(Task task) {
         tasks.add(task);
     }
