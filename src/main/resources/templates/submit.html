@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+        /* Header Styling */
+        .header {
+            background: linear-gradient(45deg, #4CAF50, #007BFF);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 15px;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .header a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+        /* Main Content Styling */
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        p {
+            font-size: 16px;
+            color: #555;
+            text-align: center;
+        }
+        .navigation {
+            display: flex;
+            align-items: center; /* Align items vertically */
+            justify-content: center; /* Ensure equal spacing between items */
+            gap: 20px; /* Add spacing between buttons and the month name */
+            margin: 20px 0;
+        }
+
+        .navigation form {
+            margin: 0; /* Remove default margin for better alignment */
+        }
+
+        .month-name {
+            flex-grow: 1; /* Push the buttons to the edges while centering the text */
+            text-align: center;
+            font-size: 40px;
+            font-weight: bold;
+            color: #007BFF;
+            text-transform: uppercase;
+        }
+
+        .navigation button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+        .navigation button:hover {
+            background-color: #0056b3;
+        }
+        /* Grid Layout for Days */
+        .day-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr); /* 7 columns for calendar layout */
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .day-item {
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .day-item:hover {
+            background-color: #e3f2fd;
+        }
+        .day-item h4 {
+            align-self: flex-start;
+            margin: 0 0 10px;
+            color: #333;
+        }
+        /* Center the task list */
+        .day-item ul {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+        }
+        .day-item ul li {
+            padding: 8px;
+            background: #e9e9e9;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            text-align: center;
+        }
+        .day-item p {
+            margin: 0;
+            color: #666;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 10px 0 0;
+        }
+        ul li {
+            padding: 8px;
+            background: #e9e9e9;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        /* Highlight Today's Date */
+        .day-item.today {
+            background-color: #abd6ff; /* Highlight color */
+            border: 2px solid #007bff;
+            box-shadow: 0 4px 6px rgb(113, 139, 172);
+        }
+        /* Style for Weekday Headers */
+        .week-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        /* Style for Empty Slots */
+        .empty-slot {
+            visibility: hidden;
+        }
+        /* Fullscreen View Styling */
+        .fullscreen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Centers the box */
+            width: 60%; /* Make it wider but not full page */
+            max-width: 800px; /* Limit maximum width for better readability */
+            background: #f9f9f9; /* Light gray similar to calendar boxes */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            z-index: 2000;
+            text-align: center; /* Center text inside the box */
+            animation: expand 0.4s ease-in-out; /* Smooth expansion effect */
+        }
+        @keyframes expand {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .fullscreen h2 {
+            color: #007BFF;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .fullscreen-content {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #555;
+            text-align: left; /* Left-align details for clarity */
+            padding: 15px;
+            background: #e9e9e9; /* Slightly darker gray for contrast */
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .fullscreen-content p {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .fullscreen-content ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .fullscreen-content ul li {
+            margin: 10px 0;
+            padding: 10px;
+            background: #fff;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .fullscreen button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .fullscreen button:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <a href="/">Submit Form</a>
+    <a href="/submit">View Tasks</a>
+</div>
+<div class="container">
+
+    <div class="navigation">
+        <form action="/submit" method="get" style="display: inline;">
+            <input type="hidden" name="direction" value="previous" />
+            <button type="submit">Previous Month</button>
+        </form>
+
+        <p class="month-name" th:text="${monthName}"></p>
+
+        <form action="/submit" method="get" style="display: inline;">
+            <input type="hidden" name="direction" value="next" />
+            <button type="submit">Next Month</button>
+        </form>
+    </div>
+
+
+    <!-- Weekday Headers -->
+    <div class="day-grid week-header">
+        <div>Sunday</div>
+        <div>Monday</div>
+        <div>Tuesday</div>
+        <div>Wednesday</div>
+        <div>Thursday</div>
+        <div>Friday</div>
+        <div>Saturday</div>
+    </div>
+
+    <div class="day-grid">
+        <!-- Thymeleaf loop to display days in grid -->
+        <!-- Offset Empty Slots Before the First Day -->
+        <div class="day-item empty-slot" th:each="i : ${#numbers.sequence(1, offsetDays - 1)}"></div>
+        <div class="day-item"
+             th:each="entry : ${days}"
+             th:classappend="${entry.key.equals(T(java.time.LocalDate).now()) ? 'today' : ''}"
+             onclick="expandBox(this)">
+            <h4 th:text="${#temporals.format(entry.key, 'd')}"></h4>
+            <p><strong>Hours Available:</strong> <span th:text="${entry.value.getAvailHours}">0</span></p>
+            <ul>
+                <!-- Thymeleaf loop to display tasks -->
+                <li th:each="task : ${entry.value.getTasks}" th:text="${task.toString}">Task</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Fullscreen View -->
+<div id="fullscreen-box" class="hidden">
+    <h2 id="fullscreen-title"></h2>
+    <div id="fullscreen-content" class="fullscreen-content">
+        <!-- Content gets dynamically filled -->
+    </div>
+    <button onclick="collapseBox()">Return to Calendar</button>
+</div>
+
+
+<script>
+    // Expand the day box to fullscreen
+    function expandBox(element) {
+        const fullscreenBox = document.getElementById('fullscreen-box');
+        const fullscreenTitle = document.getElementById('fullscreen-title');
+        const fullscreenContent = document.getElementById('fullscreen-content');
+
+        // Extract date for the title
+        const date = element.querySelector('h4').innerText;
+        fullscreenTitle.innerText = `Details for ${date}`;
+
+        // Copy content into fullscreen box
+        fullscreenContent.innerHTML = element.innerHTML;
+
+        // Show the fullscreen box
+        fullscreenBox.classList.remove('hidden');
+        fullscreenBox.classList.add('fullscreen');
+    }
+
+    // Collapse the fullscreen box back to calendar
+    function collapseBox() {
+        const fullscreenBox = document.getElementById('fullscreen-box');
+
+        // Hide the fullscreen box
+        fullscreenBox.classList.add('hidden');
+        fullscreenBox.classList.remove('fullscreen');
+    }
+</script>
+</body>
+</html>

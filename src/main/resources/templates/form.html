@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: linear-gradient(45deg, #4CAF50, #007BFF);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 15px;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .header a:hover {
+            background-color: rgba(255, 255, 255, 0.2); /* Slightly transparent hover effect */
+            transform: scale(1.1); /* Slight zoom effect */
+        }
+        /* Main Container for Forms */
+        .container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-start;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .form-box {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 45%;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Header -->
+<div class="header">
+    <a href="/">Submit Form</a>
+    <a href="/submit">View Tasks</a>
+</div>
+
+<!-- Page Content -->
+<div class="container">
+    <!-- First form box -->
+    <div class="form-box">
+        <h2>Enter Name and Length of Task</h2>
+        <form action="/submit" method="get">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="length">Length in hours:</label>
+            <input type="number" id="length" name="length" step="0.25" required>
+
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" name="date" required>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Second form box -->
+    <div class="form-box">
+        <h2>Change Available Hours in Date Range</h2>
+        <form action="/updateHours" method="post">
+            <label for="rangeStart">Start Date:</label>
+            <input type="date" id="rangeStart" name="rangeStart" required>
+
+            <label for="rangeEnd">End Date:</label>
+            <input type="date" id="rangeEnd" name="rangeEnd" required>
+
+            <label for="hours">Hours to Change:</label>
+            <input type="number" id="hours" name="hours" step="0.25" required>
+
+            <button type="submit">Update Hours</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
