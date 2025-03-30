@@ -2,7 +2,7 @@ package controller;
 
 public class TaskFormData {
     private String name;
-    private Integer length;
+    private Double length;
     private String date;
 
     public String getName() {
@@ -13,11 +13,11 @@ public class TaskFormData {
         this.name = name;
     }
 
-    public Integer getLength() {
+    public Double getLength() {
         return length;
     }
 
-    public void setLength(Integer length) {
+    public void setLength(Double length) {
         this.length = length;
     }
 

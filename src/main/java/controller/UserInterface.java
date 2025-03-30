@@ -8,11 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.TreeMap;
 
 @Controller
@@ -27,7 +23,7 @@ public class UserInterface {
         return "form";
     }
 
-    @PostMapping("/submit")
+    @GetMapping("/submit")
     public String submitForm(@RequestParam(required = false) String direction, @ModelAttribute TaskFormData taskFormData, Model model) {
         if (direction != null) {
             if(currMonth == 12) {
@@ -40,6 +36,12 @@ public class UserInterface {
                 currMonth++;
             }
         }
+
+        int offsetDays = scheduler.getFirstDay(currMonth);
+        offsetDays = offsetDays == 7 ? 1 : offsetDays + 1;
+        model.addAttribute("offsetDays", offsetDays);
+
+        model.addAttribute("monthName", scheduler.getMonthName(currMonth));
 
         if (taskFormData.getName() != null && taskFormData.getLength() != null && taskFormData.getDate() != null) {
             scheduler.addTask(new Task(taskFormData.getName(), taskFormData.getLength()), LocalDate.parse(taskFormData.getDate()));
@@ -60,18 +62,8 @@ public class UserInterface {
             currMonth = 0;
         }
 
-        // Add updated scheduler data to the model if needed
-        //model.addAttribute("currentDate", currentDate);
-        return "submit"; // Render the update hours page
+        return "submit";
     }
-
-    @GetMapping("/calendar")
-    public String showCalendar(Model model) {
-        TreeMap<LocalDate, Day> days = scheduler.getCurrMonth().getDays();
-        model.addAttribute("days", days);
-        return "calendar";
-    }
-
 
     public static void main(String[] args) {
         SpringApplication.run(UserInterface.class, args);

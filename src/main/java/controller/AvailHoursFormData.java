@@ -3,7 +3,7 @@ package controller;
 public class AvailHoursFormData {
     private String rangeStart;
     private String rangeEnd;
-    private Integer hours;
+    private Double hours;
 
     public String getRangeStart() {
         return rangeStart;
@@ -21,11 +21,11 @@ public class AvailHoursFormData {
         this.rangeEnd = rangeEnd;
     }
 
-    public Integer getHours() {
+    public Double getHours() {
         return hours;
     }
 
-    public void setHours(Integer hours) {
+    public void setHours(Double hours) {
         this.hours = hours;
     }
 }

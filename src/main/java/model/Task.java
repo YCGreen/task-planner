@@ -5,12 +5,12 @@ import java.time.LocalDate;
 public class Task {
 
     private String name;
-    private int len;
-    private int lenComplete;
+    private double len;
+    private double lenComplete;
     private AssignStatus stat;
     //int id?
 
-    public Task(String name, int len) {
+    public Task(String name, double len) {
         this.name = name;
         this.len = len;
         stat = AssignStatus.UNBEGUN;
@@ -21,11 +21,11 @@ public class Task {
         //make this default
     }
 
-    public void setLenComplete(int lenComplete) {
+    public void setLenComplete(double lenComplete) {
         this.lenComplete = lenComplete;
     }
 
-    public int getLen() {
+    public double getLen() {
         return len - lenComplete;
     }
 

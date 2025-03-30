@@ -5,10 +5,10 @@ import java.util.List;
 
 public class Day {
 
-    private int availHours;
+    private double availHours;
     private List<Task> tasks;
 
-    public Day(int availHours) {
+    public Day(double availHours) {
         this.availHours = availHours;
         tasks = new ArrayList<>();
     }
@@ -17,11 +17,11 @@ public class Day {
         return tasks;
     }
 
-    public int getAvailHours() {
+    public double getAvailHours() {
         return availHours;
     }
 
-    public void setAvailHours(int availHours) {
+    public void setAvailHours(double availHours) {
         this.availHours = availHours;
     }
 
@@ -29,7 +29,7 @@ public class Day {
         tasks.add(task);
     }
 
-    public void subtractHours(int hoursUsed) {
+    public void subtractHours(double hoursUsed) {
         availHours -= hoursUsed;
     }
 

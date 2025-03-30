@@ -21,11 +21,19 @@ public class Scheduler {
         }
     }
 
-    public void setMonthAvailHours(int availHours, LocalDate month) {
-        months.get(LocalDate.now().getMonthValue() - 1).setAvailHours(availHours);
+    public String getMonthName(int month) {
+        return months.get(month - 1).getMonthName();
     }
 
-    public void setRangeAvailHours(int availHours, LocalDate begin, LocalDate end) {
+    public int getFirstDay(int month) {
+        return months.get(month - 1).getFirstDay();
+    }
+
+    public void setMonthAvailHours(double availHours, LocalDate month) {
+        months.get(month.getMonthValue() - 1).setAvailHours(availHours);
+    }
+
+    public void setRangeAvailHours(double availHours, LocalDate begin, LocalDate end) {
         List<Day> days = getDaysInRange(begin, end);
         days.forEach(day -> day.setAvailHours(availHours));
     }
