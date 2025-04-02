@@ -72,41 +72,99 @@ public class Scheduler {
         return days;
     }
 
+
     public boolean addTask(Task task, LocalDate dueDate) {
+        if(!task.getMode()) {
+            List<Day> days = getAvailDays(dueDate);
+            int daysSize = days.size();
+
+            int currDay = 0;
+
+            AssignStatus status = addTask(days.get(currDay), task);
+
+            while(status != AssignStatus.COMPLETE) {
+                if(++currDay >= days.size()) {
+                    return false;
+                }
+                status = addTask(days.get(currDay), task);
+            }
+
+            return true;
+        }
+
         List<Day> days = getAvailDays(dueDate);
+        int daysSize = days.size();
 
         int currDay = 0;
 
-        AssignStatus status = addTask(days.get(currDay), task);
+        AssignStatus status = addTask1(days.get(currDay), task, daysSize);
 
         while(status != AssignStatus.COMPLETE) {
             if(++currDay >= days.size()) {
                 return false;
             }
-            status = addTask(days.get(currDay), task);
+            status = addTask1(days.get(currDay), task, daysSize);
         }
 
         return true;
-    }
 
-    private AssignStatus addTask(Day day, Task task) {
-        if(day.getAvailHours() >= task.getLen()) {
-            day.addTask(task);
-            day.subtractHours(task.getLen());
-            task.setLenComplete(0);
-            task.complete();
-            return AssignStatus.COMPLETE;
+
+    }
+    private AssignStatus addTask1(Day day, Task task, int days) {
+        double availHours = day.getAvailHours();
+        double taskLen = task.getLen();
+        double timePerDay = taskLen;
+
+        if(task.getMode()) {
+            double periods = taskLen / days;
+            timePerDay = periods >= 15 ? periods : 15;
         }
 
-        else if(day.getAvailHours() > 0 && day.getAvailHours() <= task.getLen()) {
+        if(availHours >= timePerDay) {
             day.addTask(task);
-            task.setLenComplete(task.getLen() - day.getAvailHours());
-            day.subtractHours(day.getAvailHours());
+            task.setLenComplete(timePerDay);
+            day.subtractHours(timePerDay);
             task.begin();
+            return task.getStatus();
+        }
+
+        else if(availHours > 0 && availHours < timePerDay) {
+            addPartialTask(day, task, availHours);
             return AssignStatus.BEGUN;
         }
 
         return AssignStatus.UNBEGUN;
+    }
+
+    private AssignStatus addTask(Day day, Task task) {
+        double availHours = day.getAvailHours();
+        double taskLen = task.getLen();
+
+        if(availHours >= taskLen) {
+            addCompleteTask(day, task, taskLen);
+            return AssignStatus.COMPLETE;
+        }
+
+        else if(availHours > 0 && availHours < taskLen) {
+            addPartialTask(day, task, taskLen);
+            return AssignStatus.BEGUN;
+        }
+
+        return AssignStatus.UNBEGUN;
+    }
+
+    private void addCompleteTask(Day day, Task task, double time) {
+        day.addTask(task);
+        day.subtractHours(time);
+     //   task.setLenComplete(0); what is this??
+        task.complete();
+    }
+
+    private void addPartialTask(Day day, Task task, double time) {
+        day.addTask(task);
+        task.setLenComplete(time);
+        day.subtractHours(time);
+        task.begin();
     }
 
     public void addYear() {

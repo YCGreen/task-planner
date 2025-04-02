@@ -4,6 +4,7 @@ public class TaskFormData {
     private String name;
     private Double length;
     private String date;
+    private boolean workStyle;
 
     public String getName() {
         return name;
@@ -28,4 +29,13 @@ public class TaskFormData {
     public void setDate(String date) {
         this.date = date;
     }
+
+    public boolean isWorkStyle() {
+        return workStyle;
+    }
+
+    public boolean isValid() {
+        return name != null && length != null && date != null;
+    }
+
 }
