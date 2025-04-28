@@ -29,6 +29,11 @@ public class Day {
         tasks.add(task);
     }
 
+    public void addPartialTask(Task task, double len) {
+        task.setLenPerDay(len);
+        tasks.add(task);
+    }
+
     public void subtractHours(double hoursUsed) {
         availHours -= hoursUsed;
     }

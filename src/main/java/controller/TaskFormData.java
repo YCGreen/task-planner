@@ -4,7 +4,7 @@ public class TaskFormData {
     private String name;
     private Double length;
     private String date;
-    private boolean workStyle;
+    private boolean interm;
 
     public String getName() {
         return name;
@@ -30,8 +30,8 @@ public class TaskFormData {
         this.date = date;
     }
 
-    public boolean isWorkStyle() {
-        return workStyle;
+    public boolean isInterm() {
+        return interm;
     }
 
     public boolean isValid() {

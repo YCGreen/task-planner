@@ -9,6 +9,7 @@ public class Task {
     private double lenComplete;
     private AssignStatus stat;
     private boolean interm;
+    private double lenPerDay;
     //int id?
 
     public Task(String name, double len, boolean interm) {
@@ -17,6 +18,7 @@ public class Task {
         stat = AssignStatus.UNBEGUN;
         lenComplete = 0;
         this.interm = interm;
+        double lenPerDay = 0;
     }
 
     public Task(String name, int len, LocalDate deadline) {
@@ -25,6 +27,10 @@ public class Task {
 
     public void setMode(boolean interm) {
         this.interm = interm;
+    }
+
+    public void setLenPerDay(double lenPerDay) {
+        this.lenPerDay = lenPerDay;
     }
 
     public boolean getMode() {
@@ -55,6 +61,10 @@ public class Task {
     }
 
     public String toString() {
+        if  (interm) {
+            return name + ", time today: " + lenPerDay;
+        }
+
         return name + ", length: " + len;
     }
 }

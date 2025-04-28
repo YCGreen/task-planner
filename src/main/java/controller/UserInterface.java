@@ -47,7 +47,7 @@ public class UserInterface {
             Task newTask = new Task(
                     taskFormData.getName(),
                     taskFormData.getLength(),
-                    taskFormData.isWorkStyle()
+                    taskFormData.isInterm()
             );
 
             boolean taskAdded = scheduler.addTask(newTask, LocalDate.parse(taskFormData.getDate()));

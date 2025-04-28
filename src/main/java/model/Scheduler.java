@@ -58,7 +58,7 @@ public class Scheduler {
 
         List<Day> days = new ArrayList<>();
 
-        if(monthStart - monthDue < 0) {
+        if(monthDue - monthStart < 0) {
             System.out.println("Invalid: due date before start date");
             return null;
         } else if(dueDate.isAfter(now.withDayOfYear(LocalDate.now().lengthOfYear()))) {
@@ -72,13 +72,20 @@ public class Scheduler {
         return days;
     }
 
-
     public boolean addTask(Task task, LocalDate dueDate) {
-        if(!task.getMode()) {
-            List<Day> days = getAvailDays(dueDate);
-            int daysSize = days.size();
+        List<Day> days = getAvailDays(dueDate);
 
-            int currDay = 0;
+        if(days == null) {
+            System.out.println("days is empty");
+            return false; //TODO: add popup message
+        }
+
+        int daysSize = days.size();
+
+        int currDay = 0;
+
+        if(!task.getMode()) { //regular, not intermittent
+
 
             AssignStatus status = addTask(days.get(currDay), task);
 
@@ -92,19 +99,55 @@ public class Scheduler {
             return true;
         }
 
-        List<Day> days = getAvailDays(dueDate);
-        int daysSize = days.size();
+        //else: is intermittent
 
-        int currDay = 0;
+        //AssignStatus status = addTask1(days.get(currDay), task, daysSize);
 
-        AssignStatus status = addTask1(days.get(currDay), task, daysSize);
+     /*   do {
+            double availHours = days.get(currDay).getAvailHours();
+            double taskLen = task.getLen();
+            double timePerDay = taskLen;
 
-        while(status != AssignStatus.COMPLETE) {
-            if(++currDay >= days.size()) {
-                return false;
+            AssignStatus status = AssignStatus.UNBEGUN;
+
+            if(task.getMode()) {
+                double periods = taskLen / days.size();
+                timePerDay = periods >= 15 ? periods : 15;
             }
-            status = addTask1(days.get(currDay), task, daysSize);
+
+            if(availHours >= timePerDay) {
+                days.get(currDay).addTask(task);
+                task.setLenComplete(timePerDay);
+                days.get(currDay).subtractHours(timePerDay);
+                task.begin();
+                //return task.getStatus();
+
+            }
+
+            else if(availHours > 0 && availHours < timePerDay) {
+                addPartialTask(days.get(currDay), task, availHours);
+                status = AssignStatus.BEGUN;
+            }
+        } while(++currDay < days.size());
+        */
+
+        double timePerDay = daysSize / task.getLen();
+        timePerDay = timePerDay >= 15 ? timePerDay : 15;
+        AssignStatus status = AssignStatus.UNBEGUN;
+
+        double timeAllotted = 0;
+
+        while(timeAllotted < task.getLen() && currDay < days.size()) {
+            double timeLeftToday = days.get(currDay).getAvailHours();
+            if(timeLeftToday >= timePerDay) {
+                days.get(currDay).addTask(task);
+                timeAllotted += timePerDay;
+            }
         }
+
+
+
+
 
         return true;
 
