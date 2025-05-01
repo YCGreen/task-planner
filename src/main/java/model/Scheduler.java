@@ -64,9 +64,9 @@ public class Scheduler {
         } else if(dueDate.isAfter(now.withDayOfYear(LocalDate.now().lengthOfYear()))) {
             addYear();
         } else if(monthStart == monthDue) {
-            days = months.get(monthStart).getDaysInRange(now, dueDate); //TODO: fix for multiple years in months then delete redundant line
+            days = getDaysInRange(now, dueDate); //TODO: fix for multiple years in months then delete redundant line
         } else {
-            days.addAll(months.get(monthStart).getDaysInRange(now, dueDate));
+            days.addAll(getDaysInRange(now, dueDate));
         }
 
         return days;
@@ -84,7 +84,7 @@ public class Scheduler {
 
         int currDay = 0;
 
-        if(!task.getMode()) { //regular, not intermittent
+        if(task.getMode()) { //regular, not intermittent
 
 
             AssignStatus status = addTask(days.get(currDay), task);
@@ -131,8 +131,18 @@ public class Scheduler {
         } while(++currDay < days.size());
         */
 
-        double timePerDay = daysSize / task.getLen();
-        timePerDay = timePerDay >= 15 ? timePerDay : 15;
+        double availTime = 0;
+        for (Day day : days) {
+            availTime += day.getAvailHours();
+        }
+
+        double timePerDay = task.getLen() / availTime * 3; //TODO: replace with availHours
+                //months.get(LocalDate.now().getMonthValue()).getDay(LocalDate.now()).getAvailHours();
+        if(timePerDay < 0) {
+            return false; //popup: not enough time
+        }
+
+        timePerDay = timePerDay >= .25 ? timePerDay : .25;
         AssignStatus status = AssignStatus.UNBEGUN;
 
         double timeAllotted = 0;
@@ -140,9 +150,14 @@ public class Scheduler {
         while(timeAllotted < task.getLen() && currDay < days.size()) {
             double timeLeftToday = days.get(currDay).getAvailHours();
             if(timeLeftToday >= timePerDay) {
-                days.get(currDay).addTask(task);
+                days.get(currDay).addPartialTask(task, timePerDay);
                 timeAllotted += timePerDay;
             }
+            else if(timeLeftToday < timePerDay) {
+                days.get(currDay).addPartialTask(task, timeLeftToday);
+                timeAllotted += timeLeftToday;
+            }
+            currDay++;
         }
 
 
@@ -230,3 +245,4 @@ public class Scheduler {
     }
 
 }
+//when you do an intermittent then an all at once it doesn't do the all at once option

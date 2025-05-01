@@ -35,13 +35,13 @@ public class Month {
         days.values().forEach(day -> day.setAvailHours(availHours));
     }
 
-    public List<Day> getDaysInRange(LocalDate begin, LocalDate end) {
+  /*  public List<Day> getDaysInRange(LocalDate begin, LocalDate end) {
         return days.entrySet().stream()
                 .filter(entry -> !entry.getKey().isBefore(begin) && !entry.getKey().isAfter(end))
                 .sorted(Map.Entry.comparingByKey())
                 .map(Map.Entry::getValue)
                 .collect(Collectors.toList());
-    }
+    }*/
 
     public Day getDay(LocalDate index) {
         return days.get(index);

@@ -39,8 +39,11 @@ public class Day {
     }
 
     public String toString() {
-        return "Available hours: " + availHours + "\nTasks: " + tasks.toString();
+        int hours = (int) availHours;
+        int minutes = (int) Math.round((availHours - hours) * 60);
+        return "Available hours: " + hours + " hours " + minutes + " minutes";
     }
+
 
 
 }

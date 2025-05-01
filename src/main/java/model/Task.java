@@ -61,10 +61,17 @@ public class Task {
     }
 
     public String toString() {
-        if  (interm) {
-            return name + ", time today: " + lenPerDay;
+        if (!interm) {
+            return name + ", time today: " + formatHours(lenPerDay);
         }
-
-        return name + ", length: " + len;
+        return name + ", length: " + formatHours(len);
+    }
+    private String formatHours(double time) {
+        int hours = (int) time;
+        int minutes = (int) Math.round((time - hours) * 60);
+        if(hours < 1) {
+            return minutes + " minutes";
+        }
+        return hours + " hours " + minutes + " minutes";
     }
 }
