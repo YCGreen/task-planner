@@ -80,150 +80,73 @@ public class Scheduler {
             return false; //TODO: add popup message
         }
 
-        int daysSize = days.size();
-
         int currDay = 0;
 
-        if(task.getMode()) { //regular, not intermittent
+        if(!task.getMode()) { //regular, not intermittent
 
+            double timeAllotted = 0;
+            double len = task.getLen();
 
-            AssignStatus status = addTask(days.get(currDay), task);
-
-            while(status != AssignStatus.COMPLETE) {
-                if(++currDay >= days.size()) {
-                    return false;
+            while(!task.isComplete()) {
+                if(currDay >= days.size()) {
+                    return false; //add popup: not enough available time
                 }
-                status = addTask(days.get(currDay), task);
-            }
 
-            return true;
+                Day today = days.get(currDay);
+                len = task.getLen();
+                double availHours = today.getAvailHours();
+
+                if(availHours >= len) {
+                    today.addTask(task);
+                    timeAllotted += len;
+                    task.complete();
+                }
+
+                else if(availHours > 0){
+                    today.addPartialTask(task, availHours);
+                    timeAllotted += availHours;
+                    task.setLenComplete(timeAllotted);
+                }
+
+                currDay++;
+            }
         }
 
         //else: is intermittent
+            else {
 
-        //AssignStatus status = addTask1(days.get(currDay), task, daysSize);
 
-     /*   do {
-            double availHours = days.get(currDay).getAvailHours();
-            double taskLen = task.getLen();
-            double timePerDay = taskLen;
-
-            AssignStatus status = AssignStatus.UNBEGUN;
-
-            if(task.getMode()) {
-                double periods = taskLen / days.size();
-                timePerDay = periods >= 15 ? periods : 15;
+            double availTime = 0;
+            for (Day day : days) {
+                availTime += day.getAvailHours();
             }
 
-            if(availHours >= timePerDay) {
-                days.get(currDay).addTask(task);
-                task.setLenComplete(timePerDay);
-                days.get(currDay).subtractHours(timePerDay);
-                task.begin();
-                //return task.getStatus();
-
+            double timePerDay = task.getLen() / availTime * 3; //TODO: replace with availHours
+            //months.get(LocalDate.now().getMonthValue()).getDay(LocalDate.now()).getAvailHours();
+            if (timePerDay < 0) {
+                return false; //popup: not enough time
             }
 
-            else if(availHours > 0 && availHours < timePerDay) {
-                addPartialTask(days.get(currDay), task, availHours);
-                status = AssignStatus.BEGUN;
-            }
-        } while(++currDay < days.size());
-        */
+            timePerDay = timePerDay >= .25 ? timePerDay : .25;
 
-        double availTime = 0;
-        for (Day day : days) {
-            availTime += day.getAvailHours();
+            double timeAllotted = 0;
+
+            while (timeAllotted < task.getLen() && currDay < days.size()) {
+                double timeLeftToday = days.get(currDay).getAvailHours();
+                if (timeLeftToday >= timePerDay) {
+                    days.get(currDay).addPartialTask(task, timePerDay);
+                    timeAllotted += timePerDay;
+                } else if (timeLeftToday < timePerDay) {
+                    days.get(currDay).addPartialTask(task, timeLeftToday);
+                    timeAllotted += timeLeftToday;
+                }
+                currDay++;
+            }
         }
-
-        double timePerDay = task.getLen() / availTime * 3; //TODO: replace with availHours
-                //months.get(LocalDate.now().getMonthValue()).getDay(LocalDate.now()).getAvailHours();
-        if(timePerDay < 0) {
-            return false; //popup: not enough time
-        }
-
-        timePerDay = timePerDay >= .25 ? timePerDay : .25;
-        AssignStatus status = AssignStatus.UNBEGUN;
-
-        double timeAllotted = 0;
-
-        while(timeAllotted < task.getLen() && currDay < days.size()) {
-            double timeLeftToday = days.get(currDay).getAvailHours();
-            if(timeLeftToday >= timePerDay) {
-                days.get(currDay).addPartialTask(task, timePerDay);
-                timeAllotted += timePerDay;
-            }
-            else if(timeLeftToday < timePerDay) {
-                days.get(currDay).addPartialTask(task, timeLeftToday);
-                timeAllotted += timeLeftToday;
-            }
-            currDay++;
-        }
-
-
-
-
-
         return true;
-
-
-    }
-    private AssignStatus addTask1(Day day, Task task, int days) {
-        double availHours = day.getAvailHours();
-        double taskLen = task.getLen();
-        double timePerDay = taskLen;
-
-        if(task.getMode()) {
-            double periods = taskLen / days;
-            timePerDay = periods >= 15 ? periods : 15;
-        }
-
-        if(availHours >= timePerDay) {
-            day.addTask(task);
-            task.setLenComplete(timePerDay);
-            day.subtractHours(timePerDay);
-            task.begin();
-            return task.getStatus();
-        }
-
-        else if(availHours > 0 && availHours < timePerDay) {
-            addPartialTask(day, task, availHours);
-            return AssignStatus.BEGUN;
-        }
-
-        return AssignStatus.UNBEGUN;
     }
 
-    private AssignStatus addTask(Day day, Task task) {
-        double availHours = day.getAvailHours();
-        double taskLen = task.getLen();
 
-        if(availHours >= taskLen) {
-            addCompleteTask(day, task, taskLen);
-            return AssignStatus.COMPLETE;
-        }
-
-        else if(availHours > 0 && availHours < taskLen) {
-            addPartialTask(day, task, taskLen);
-            return AssignStatus.BEGUN;
-        }
-
-        return AssignStatus.UNBEGUN;
-    }
-
-    private void addCompleteTask(Day day, Task task, double time) {
-        day.addTask(task);
-        day.subtractHours(time);
-     //   task.setLenComplete(0); what is this??
-        task.complete();
-    }
-
-    private void addPartialTask(Day day, Task task, double time) {
-        day.addTask(task);
-        task.setLenComplete(time);
-        day.subtractHours(time);
-        task.begin();
-    }
 
     public void addYear() {
         LocalDate currMonth = LocalDate.now().withDayOfYear(1).plusYears(1);

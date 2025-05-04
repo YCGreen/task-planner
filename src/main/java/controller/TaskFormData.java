@@ -30,6 +30,11 @@ public class TaskFormData {
         this.date = date;
     }
 
+    public void setInterm(String interm) {
+        this.interm = Boolean.parseBoolean(interm);
+    }
+
+
     public boolean isInterm() {
         return interm;
     }

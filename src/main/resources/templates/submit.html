@@ -291,14 +291,11 @@
              onclick="expandBox(this)">
             <h4 th:text="${#temporals.format(entry.key, 'd')}"></h4>
             <p>
-                <strong>Hours Available:</strong>
+                <strong>Today's Tasks:</strong>
                 <span th:text="${entry.value.toString}">0</span>
             </p>
 
-            <ul>
-                <!-- Thymeleaf loop to display tasks -->
-                <li th:each="task : ${entry.value.getTasks}" th:text="${task.toString}">Task</li>
-            </ul>
+
         </div>
     </div>
 </div>

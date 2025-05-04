@@ -98,6 +98,8 @@ or do in shorter number of days with more work per day? maybe set that in set av
 Enter. then task scheduler schedules and leads to view calendar
 
 
+option: add recurring tasks
+
 TODO:
 fix so you don't get error when hit currMonth = -1
  */
