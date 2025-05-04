@@ -43,9 +43,19 @@ public class UserInterface {
 
         model.addAttribute("monthName", scheduler.getMonthName(currMonth));
 
-        if (taskFormData.getName() != null && taskFormData.getLength() != null && taskFormData.getDate() != null) {
-            scheduler.addTask(new Task(taskFormData.getName(), taskFormData.getLength()), LocalDate.parse(taskFormData.getDate()));
+        if (taskFormData.isValid()) {
+            Task newTask = new Task(
+                    taskFormData.getName(),
+                    taskFormData.getLength(),
+                    taskFormData.isInterm()
+            );
+
+            boolean taskAdded = scheduler.addTask(newTask, LocalDate.parse(taskFormData.getDate()));
+            if (!taskAdded) {
+                model.addAttribute("showPopup", true);
+            }
         }
+
 
         TreeMap<LocalDate, Day> days = scheduler.getMonth(currMonth).getDays();
         model.addAttribute("days", days);
@@ -77,6 +87,8 @@ public class UserInterface {
 /*
 
 On home screen: create account. username, password
+Set up preferences: available hours per day this month/week/range
+Rather work on projects intermittently or all at once? need to create functionality backend for this
 Options: View calendar, set availability, add new task (future: delete existing task)
 View calendar: displays all tasks on a week-by-week or by month
 Set availability: set how many hours per day to work on all tasks (by week basis) Future: set actual hours eg 9-10 PM
@@ -86,6 +98,9 @@ or do in shorter number of days with more work per day? maybe set that in set av
 Enter. then task scheduler schedules and leads to view calendar
 
 
+option: add recurring tasks
+
 TODO:
 fix so you don't get error when hit currMonth = -1
+delete task option
  */

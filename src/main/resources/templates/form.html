@@ -81,6 +81,48 @@
         button:hover {
             background-color: #0056b3;
         }
+        #popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 20px;
+            z-index: 1000;
+            display: none; /* Initially hidden */
+        }
+
+        #popup .popup-content {
+            text-align: center;
+        }
+
+        #popup button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #popup button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Optional: Dim background when popup is visible */
+        .dim-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 999;
+            display: none; /* Hidden by default */
+        }
     </style>
 </head>
 <body>
@@ -105,9 +147,22 @@
             <label for="date">Select Date:</label>
             <input type="date" id="date" name="date" required>
 
+            <div>
+                <label for="workStyleIntermittent">
+                    <input type="radio" id="workStyleIntermittent" name="interm" value="true" required>
+                    Intermittently
+                </label>
+                <label for="workStyleOnce">
+                    <input type="radio" id="workStyleOnce" name="interm" value="false" required>
+                    All at once
+                </label>
+            </div>
+
+
             <button type="submit">Submit</button>
         </form>
     </div>
+
 
     <!-- Second form box -->
     <div class="form-box">
@@ -126,5 +181,27 @@
         </form>
     </div>
 </div>
+
+<div id="popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); border-radius: 8px; text-align: center; z-index: 1000;">
+    <p id="popup-message">Not enough time</p>
+    <button onclick="closePopup()">Close</button>
+</div>
+
+<script>
+    function showPopup() {
+        document.getElementById('popup').style.display = 'block';
+    }
+
+    function closePopup() {
+        document.getElementById('popup').style.display = 'none';
+    }
+    const showPopupFlag = /*[[${showPopup}]]*/ false; // Replace 'false' with Thymeleaf condition
+
+    if (showPopupFlag) {
+        showPopup(); // Trigger the popup if the flag is true
+    }
+</script>
+
+
 </body>
 </html>
