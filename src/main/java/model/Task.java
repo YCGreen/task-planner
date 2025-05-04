@@ -16,7 +16,6 @@ public class Task {
         this.len = len;
         lenComplete = 0;
         this.interm = interm;
-        double lenPerDay = 0;
     }
 
     public Task(String name, int len, LocalDate deadline) {
@@ -37,17 +36,10 @@ public class Task {
 
     public void setLenComplete(double lenComplete) {
         this.lenComplete = lenComplete;
-        if (lenComplete == len) {
-            //
-        }
     }
 
     public double getLenComplete() {
         return lenComplete;
-    }
-
-    public double getLenRemaining() {
-        return len - lenComplete;
     }
 
     public void complete() {

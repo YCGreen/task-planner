@@ -102,4 +102,5 @@ option: add recurring tasks
 
 TODO:
 fix so you don't get error when hit currMonth = -1
+delete task option
  */

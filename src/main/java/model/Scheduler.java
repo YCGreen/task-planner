@@ -61,10 +61,10 @@ public class Scheduler {
         if(monthDue - monthStart < 0) {
             System.out.println("Invalid: due date before start date");
             return null;
+        }  else if(monthStart == monthDue) {
+            days = getDaysInRange(now, dueDate); //TODO: fix for multiple years in months then delete redundant line
         } else if(dueDate.isAfter(now.withDayOfYear(LocalDate.now().lengthOfYear()))) {
             addYear();
-        } else if(monthStart == monthDue) {
-            days = getDaysInRange(now, dueDate); //TODO: fix for multiple years in months then delete redundant line
         } else {
             days.addAll(getDaysInRange(now, dueDate));
         }
@@ -80,73 +80,78 @@ public class Scheduler {
             return false; //TODO: add popup message
         }
 
-        int currDay = 0;
-
-        if(!task.getMode()) { //regular, not intermittent
-
-            double timeAllotted = 0;
-            double len = task.getLen();
-
-            while(!task.isComplete()) {
-                if(currDay >= days.size()) {
-                    return false; //add popup: not enough available time
-                }
-
-                Day today = days.get(currDay);
-                len = task.getLen();
-                double availHours = today.getAvailHours();
-
-                if(availHours >= len) {
-                    today.addTask(task);
-                    timeAllotted += len;
-                    task.complete();
-                }
-
-                else if(availHours > 0){
-                    today.addPartialTask(task, availHours);
-                    timeAllotted += availHours;
-                    task.setLenComplete(timeAllotted);
-                }
-
-                currDay++;
-            }
-        }
-
-        //else: is intermittent
-            else {
-
-
-            double availTime = 0;
-            for (Day day : days) {
-                availTime += day.getAvailHours();
-            }
-
-            double timePerDay = task.getLen() / availTime * 3; //TODO: replace with availHours
-            //months.get(LocalDate.now().getMonthValue()).getDay(LocalDate.now()).getAvailHours();
-            if (timePerDay < 0) {
-                return false; //popup: not enough time
-            }
-
-            timePerDay = timePerDay >= .25 ? timePerDay : .25;
-
-            double timeAllotted = 0;
-
-            while (timeAllotted < task.getLen() && currDay < days.size()) {
-                double timeLeftToday = days.get(currDay).getAvailHours();
-                if (timeLeftToday >= timePerDay) {
-                    days.get(currDay).addPartialTask(task, timePerDay);
-                    timeAllotted += timePerDay;
-                } else if (timeLeftToday < timePerDay) {
-                    days.get(currDay).addPartialTask(task, timeLeftToday);
-                    timeAllotted += timeLeftToday;
-                }
-                currDay++;
-            }
-        }
-        return true;
+        return task.getMode() ? addTaskIntermittent(task, days) : addTaskReg(task, days);
     }
 
+    private boolean addTaskIntermittent(Task task, List<Day> days) {
+        Day today;
+        double timePerDay = calculateTimePerDay(days, task.getLen());
+        double timeAllotted = 0;
+        int currDay = 0;
 
+        while (timeAllotted < task.getLen() && currDay < days.size()) {
+
+            today = days.get(currDay);
+            double availHours = today.getAvailHours();
+
+            if (availHours >= timePerDay) {
+                today.addPartialTask(task, timePerDay);
+                timeAllotted += timePerDay;
+            } else if (availHours < timePerDay) {
+                today.addPartialTask(task, availHours);
+                timeAllotted += availHours;
+            }
+
+            currDay++;
+        }
+
+        return timeAllotted >= task.getLen();
+    }
+
+    private boolean addTaskReg(Task task, List<Day> days) {
+        Day today;
+        double len;
+        double timeAllotted = 0;
+        int currDay = 0;
+
+        while(!task.isComplete() && currDay < days.size()) {
+            today = days.get(currDay);
+            len = task.getLen();
+            double availHours = today.getAvailHours();
+
+            if(availHours >= len) {
+                today.addTask(task);
+                timeAllotted += len;
+                task.complete();
+            }
+
+            else if(availHours > 0){
+                today.addPartialTask(task, availHours);
+                timeAllotted += availHours;
+                task.setLenComplete(timeAllotted);
+            }
+
+            currDay++;
+        }
+
+        return task.isComplete();
+    }
+
+    private double calculateTimePerDay(List<Day> days, double len) {
+        double availTime = 0;
+        for (Day day : days) {
+            availTime += day.getAvailHours();
+        }
+
+        double timePerDay = len / availTime * 3; //TODO: replace with availHours
+        //months.get(LocalDate.now().getMonthValue()).getDay(LocalDate.now()).getAvailHours();
+        if (timePerDay < 0) {
+            return 0; //popup: not enough time
+        }
+
+        return timePerDay >= .25 ? timePerDay : .25;
+
+    }
 
     public void addYear() {
         LocalDate currMonth = LocalDate.now().withDayOfYear(1).plusYears(1);
@@ -168,4 +173,3 @@ public class Scheduler {
     }
 
 }
-//when you do an intermittent then an all at once it doesn't do the all at once option
